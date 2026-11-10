@@ -16,9 +16,11 @@ CREATE TABLE IF NOT EXISTS appointments(
     time TEXT NOT NULL, 
     reason TEXT, 
     status TEXT DEFAULT "Booked"
-
 )
+""")
 
+cursor.execute("""
+INSERT INTO appointments (patient_name, patient_contact, doctor, day, time, reason) VALUES (?,?,?,?,?,?)
 """)
 
 connection.commit()
