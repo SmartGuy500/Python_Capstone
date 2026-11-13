@@ -26,16 +26,16 @@ def create_table():
     connection.close()
 
 
-def add_appointment(patient_name, patient_contact, doctor, day, time, reason): 
-    cursor.execute("""
-    INSERT INTO appointments (patient_name, patient_contact, doctor, day, time, reason) VALUES ("Reggie", "254321999078", "Dr. Paul", "Tuesday", "16:00", "Placeholder")
-    """)
+def add_appointments(patient_name, patient_contact, doctor, day, time, reason): 
+    cursor.execute(
+    "INSERT INTO appointments (patient_name, patient_contact, doctor, day, time, reason) VALUES (?, ?, ?, ?, ?, ?)", (patient_name, patient_contact, doctor, day, time, reason)
+    )
     connection.commit()
     connection.close()
 
-def get_appointment(patient_name, patient_contact, doctor, day, time, reason): 
+def get_appointments(patient_name, patient_contact, doctor, day, time, reason): 
     cursor.execute("""
-    SELECT patient_name, patient_contact, doctor, day, time, reason FROM appointments 
+    "SELECT patient_name, patient_contact, doctor, day, time, reason FROM appointments" 
     """)
     rows=cursor.fetchall()
     connection.close()
@@ -53,25 +53,20 @@ def get_appointment(patient_name, patient_contact, doctor, day, time, reason):
     return patients
 
 def update_appointments(id, patient_name, patient_contact, doctor, day, time, reason):
-    cursor.execute("""
-    UPDATE appointments SET patient_name= ?, patient_contact= ?, doctor= ?, day= ?, time= ?, reason=? WHERE id= ? (?, ?, ?, ?, ?, ?)
-    """)
+    cursor.execute(
+    "UPDATE appointments SET patient_name= ?, patient_contact= ?, doctor= ?, day= ?, time= ?, reason=? WHERE id= ? (?, ?, ?, ?, ?, ?)", (patient_name, patient_contact, doctor, day, time, reason, id)
+    )
     connection.commit()
     connection.close()
 
 def delete_appointments(id):
-    cursor.execute("""
-    DELETE FROM appointments WHERE id= ? 
-    """)
+    cursor.execute(
+    "DELETE FROM appointments WHERE id= ?", (id)
+    )
     connection.commit()
     connection.close()
 
 
-
-
-connection.commit()
-
-connection.close()
 
 print("Completed")
 
