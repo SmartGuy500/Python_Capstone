@@ -1,3 +1,5 @@
 *.db
 .venv/
 __pycache__/
+review.py
+review_db.py

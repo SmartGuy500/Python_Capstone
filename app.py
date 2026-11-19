@@ -15,7 +15,7 @@ if "message" in st.session_state:
 patients= appointments.get_appointments()
 
 def describe(patient): 
-    return f"# {patient["id"] - {patient["reason"]}}"
+    return f"#{patient["id"]} - {patient["patient_name"]} - {patient["reason"] or "No reason"}"
 
 tab_view, tab_add, tab_update, tab_delete= st.tabs(["View", "Add", "Update", "Delete"])
 
@@ -87,6 +87,11 @@ with tab_delete:
     else: 
         patient= st.selectbox("Choose an appointment", patients, format_func=describe, key="delete_choice")
         sure= st.selectbox(f"Yes I confirm I am deleting {patient["patient_name"]}")
+
+        if st.button("Delete appointment"): 
+            appointments.delete_appointments(patient["id"])
+            st.session_state["message"]= f"Deleted {patient["patient_name"]} successfully"
+            st.rerun()
 
 
 

@@ -26,16 +26,18 @@ def create_table():
     connection.close()
 
 
-def add_appointments(patient_name, patient_contact, doctor, day, time, reason): 
-    cursor.execute(
-    "INSERT INTO appointments (patient_name, patient_contact, doctor, day, time, reason) VALUES (?, ?, ?, ?, ?, ?)", (patient_name, patient_contact, doctor, day, time, reason)
+def add_appointments(patient_name, patient_contact, doctor, day, time, reason):
+        connection.execute(
+        "INSERT INTO appointments "
+        "(patient_name, patient_contact, doctor, day, time, reason) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        (patient_name, patient_contact, doctor, day, time, reason),
     )
-    connection.commit()
-    connection.close()
+
 
 def get_appointments(patient_name, patient_contact, doctor, day, time, reason): 
-    cursor.execute("""
-    "SELECT patient_name, patient_contact, doctor, day, time, reason FROM appointments" 
+    connection.execute("""
+    SELECT patient_name, patient_contact, doctor, day, time, reason FROM appointments 
     """)
     rows=cursor.fetchall()
     connection.close()
@@ -52,21 +54,16 @@ def get_appointments(patient_name, patient_contact, doctor, day, time, reason):
         })
     return patients
 
+
 def update_appointments(id, patient_name, patient_contact, doctor, day, time, reason):
-    cursor.execute(
-    "UPDATE appointments SET patient_name= ?, patient_contact= ?, doctor= ?, day= ?, time= ?, reason=? WHERE id= ? (?, ?, ?, ?, ?, ?)", (patient_name, patient_contact, doctor, day, time, reason, id)
+    connection.execute(
+        "UPDATE appointments "
+        "SET patient_name=?, patient_contact=?, doctor=?, day=?, time=?, reason=? "
+        "WHERE id=?",
+        (patient_name, patient_contact, doctor, day, time, reason, id),
     )
-    connection.commit()
-    connection.close()
+
 
 def delete_appointments(id):
-    cursor.execute(
-    "DELETE FROM appointments WHERE id= ?", (id)
-    )
-    connection.commit()
-    connection.close()
-
-
-
-print("Completed")
+    connection.execute("DELETE FROM appointments WHERE id=?", (id))
 
