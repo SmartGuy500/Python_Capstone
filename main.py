@@ -4,18 +4,16 @@ import appointments
 
 
 st.set_page_config(page_title="Clinic appointments", page_icon="🏥")
-try:
-    appointments.create_table()
-    patients = appointments.get_appointments()
-except appointments.AppointmentDatabaseError as error:
-    st.error(str(error))
-    st.stop()
+appointments.create_table()
 
 st.title("Clinic appointments")
 st.caption("Manage clinic appointments using Python, SQLite, and Streamlit.")
 
 if "message" in st.session_state:
     st.success(st.session_state.pop("message"))
+
+patients = appointments.get_appointments()
+
 
 def describe(patient):
     return (
@@ -57,22 +55,18 @@ with tab_add:
         elif not time.strip():
             st.error("Please enter the appointment time.")
         else:
-            try:
-                appointments.add_appointments(
-                    patient_name.strip(),
-                    patient_contact.strip(),
-                    doctor.strip(),
-                    day.strip(),
-                    time.strip(),
-                    reason.strip(),
-                )
-            except appointments.AppointmentDatabaseError as error:
-                st.error(str(error))
-            else:
-                st.session_state["message"] = (
-                    f"Added {patient_name.strip()}'s appointment successfully."
-                )
-                st.rerun()
+            appointments.add_appointments(
+                patient_name.strip(),
+                patient_contact.strip(),
+                doctor.strip(),
+                day.strip(),
+                time.strip(),
+                reason.strip(),
+            )
+            st.session_state["message"] = (
+                f"Added {patient_name.strip()}'s appointment successfully."
+            )
+            st.rerun()
 
 with tab_update:
     st.subheader("Update an appointment")
@@ -127,23 +121,19 @@ with tab_update:
             elif not new_time.strip():
                 st.error("Please enter the appointment time.")
             else:
-                try:
-                    appointments.update_appointments(
-                        patient_id,
-                        new_patient_name.strip(),
-                        new_patient_contact.strip(),
-                        new_doctor.strip(),
-                        new_day.strip(),
-                        new_time.strip(),
-                        new_reason.strip(),
-                    )
-                except appointments.AppointmentDatabaseError as error:
-                    st.error(str(error))
-                else:
-                    st.session_state["message"] = (
-                        f"Updated {new_patient_name.strip()}'s appointment successfully."
-                    )
-                    st.rerun()
+                appointments.update_appointments(
+                    patient_id,
+                    new_patient_name.strip(),
+                    new_patient_contact.strip(),
+                    new_doctor.strip(),
+                    new_day.strip(),
+                    new_time.strip(),
+                    new_reason.strip(),
+                )
+                st.session_state["message"] = (
+                    f"Updated {new_patient_name.strip()}'s appointment successfully."
+                )
+                st.rerun()
     else:
         st.info("There are no appointments to update.")
 
@@ -165,14 +155,10 @@ with tab_delete:
             key=f"delete_confirm_{patient['id']}",
         )
         if st.button("Delete appointment", type="primary", disabled=not confirmed):
-            try:
-                appointments.delete_appointments(patient["id"])
-            except appointments.AppointmentDatabaseError as error:
-                st.error(str(error))
-            else:
-                st.session_state["message"] = (
-                    f"Deleted {patient['patient_name']}'s appointment successfully."
-                )
-                st.rerun()
+            appointments.delete_appointments(patient["id"])
+            st.session_state["message"] = (
+                f"Deleted {patient['patient_name']}'s appointment successfully."
+            )
+            st.rerun()
     else:
         st.info("There are no appointments to delete.")
