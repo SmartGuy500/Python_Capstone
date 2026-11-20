@@ -34,7 +34,7 @@ with tab_add:
         patient_contact= st.text_input("Phone Number: ")
         doctor= st.text_input("Doctor's name: ")
         day= st.text_input("Day of appointment: ")
-        time= st.text("Time of appointment: ")
+        time= st.text_input("Time of appointment: ")
         reason= st.text_input("Reason for appointment: ", placeholder= "Medical check-in")
         submitted= st.form_submit_button("Add appointment")
 
