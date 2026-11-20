@@ -1,69 +1,58 @@
+from contextlib import closing
 import sqlite3 
 
 DB_FILE = "appointments.db"
 
-print("Ready to start")
 
-connection = sqlite3.connect(DB_FILE)
-
-cursor = connection.cursor()
-
-
-def create_table(): 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS appointments(
-        id INTEGER PRIMARY KEY AUTOINCREMENT, 
-        patient_name TEXT NOT NULL, 
-        patient_contact TEXT, 
-        doctor TEXT NOT NULL, 
-        day TEXT NOT NULL, 
-        time TEXT NOT NULL, 
-        reason TEXT, 
-        status TEXT DEFAULT "Booked"
-    )
-    """)
-    connection.commit()
-    connection.close()
+def create_table():
+    with closing(sqlite3.connect(DB_FILE)) as connection, connection:
+        connection.execute("""
+        CREATE TABLE IF NOT EXISTS appointments(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            patient_name TEXT NOT NULL,
+            patient_contact TEXT,
+            doctor TEXT NOT NULL,
+            day TEXT NOT NULL,
+            time TEXT NOT NULL,
+            reason TEXT,
+            status TEXT DEFAULT "Booked"
+        )
+        """)
 
 
 def add_appointments(patient_name, patient_contact, doctor, day, time, reason):
+    with closing(sqlite3.connect(DB_FILE)) as connection, connection:
         connection.execute(
-        "INSERT INTO appointments "
-        "(patient_name, patient_contact, doctor, day, time, reason) "
-        "VALUES (?, ?, ?, ?, ?, ?)",
-        (patient_name, patient_contact, doctor, day, time, reason),
-    )
+            "INSERT INTO appointments "
+            "(patient_name, patient_contact, doctor, day, time, reason) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (patient_name, patient_contact, doctor, day, time, reason),
+        )
 
 
-def get_appointments(patient_name, patient_contact, doctor, day, time, reason): 
-    connection.execute("""
-    SELECT patient_name, patient_contact, doctor, day, time, reason FROM appointments 
-    """)
-    rows=cursor.fetchall()
-    connection.close()
-
-    patients=[]
-    for row in rows:
-        patients.append({
-            "patient_name": row[0], 
-            "patient_contact": row[1],
-            "doctor": row[2],
-            "day": row[3],
-            "time": row[4],
-            "reason": row[5]
-        })
-    return patients
+def get_appointments():
+    with closing(sqlite3.connect(DB_FILE)) as connection, connection:
+        connection.row_factory = sqlite3.Row
+        rows = connection.execute("""
+            SELECT id, patient_name, patient_contact, doctor, day, time, reason, status
+            FROM appointments
+            ORDER BY id
+        """).fetchall()
+        return [dict(row) for row in rows]
 
 
 def update_appointments(id, patient_name, patient_contact, doctor, day, time, reason):
-    connection.execute(
-        "UPDATE appointments "
-        "SET patient_name=?, patient_contact=?, doctor=?, day=?, time=?, reason=? "
-        "WHERE id=?",
-        (patient_name, patient_contact, doctor, day, time, reason, id),
-    )
+    with closing(sqlite3.connect(DB_FILE)) as connection, connection:
+        connection.execute(
+            "UPDATE appointments "
+            "SET patient_name=?, patient_contact=?, doctor=?, day=?, time=?, reason=? "
+            "WHERE id=?",
+            (patient_name, patient_contact, doctor, day, time, reason, id),
+        )
 
 
 def delete_appointments(id):
-    connection.execute("DELETE FROM appointments WHERE id=?", (id))
+    with closing(sqlite3.connect(DB_FILE)) as connection, connection:
+        connection.execute("DELETE FROM appointments WHERE id=?", (id,))
+
 
